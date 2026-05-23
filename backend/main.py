@@ -1,11 +1,16 @@
 # ── Imports ──────────────────────────────────────────────
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends
+
+from auth import get_current_user
 from auth import (
     hash_password,
     verify_password,
-    create_access_token
+    create_access_token,
+    
 )
 
-from models import User
+from models import User,EmailHistory
 import os
 from dotenv import load_dotenv
 
@@ -65,7 +70,7 @@ async def health_check():
 
 # ── Generate Email Route ──────────────────────────────────
 @app.post("/generate")
-async def generate_email(data: EmailRequest):
+async def generate_email(data: EmailRequest, current_user: User = Depends(get_current_user)):
 
     final_prompt = f"""
     Write a professional {data.tone} email.
@@ -89,10 +94,11 @@ async def generate_email(data: EmailRequest):
     db = SessionLocal()
 
     new_email = EmailHistory(
-        prompt=data.prompt,
-        tone=data.tone,
-        generated_email=generated_text
-    )
+    user_id=current_user.id,
+    prompt=data.prompt,
+    tone=data.tone,
+    generated_email=generated_text
+)
 
     db.add(new_email)
     db.commit()
@@ -101,11 +107,13 @@ async def generate_email(data: EmailRequest):
         "generated_email": generated_text
     }
 @app.get("/history")
-def get_history():
+def get_history(current_user: User = Depends(get_current_user)):
 
     db = SessionLocal()
 
-    emails = db.query(EmailHistory).all()
+    emails = db.query(EmailHistory).filter(
+    EmailHistory.user_id == current_user.id
+).all()
 
     return emails
 class SignupRequest(BaseModel):
@@ -142,33 +150,38 @@ def signup(data: SignupRequest):
     }
 
 @app.post("/login")
-def login(data: SignupRequest):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends()
+):
 
     db = SessionLocal()
 
     user = db.query(User).filter(
-        User.email == data.email
+        User.email == form_data.username
     ).first()
 
     if not user:
 
-        return {
-            "message": "Invalid email"
-        }
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email"
+        )
 
     if not verify_password(
-        data.password,
+        form_data.password,
         user.password
     ):
 
-        return {
-            "message": "Invalid password"
-        }
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid password"
+        )
 
-    token = create_access_token(
-        {"user_id": user.id}
+    access_token = create_access_token(
+        data={"sub": user.email}
     )
 
     return {
-        "access_token": token
+        "access_token": access_token,
+        "token_type": "bearer"
     }

@@ -17,7 +17,8 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, validator
+from pydantic import BaseModel,field_validator, ValidationInfo
+
 
 from database import SessionLocal, engine
 from models import EmailHistory, Base
@@ -57,10 +58,13 @@ class EmailRequest(BaseModel):
     prompt: str
     tone: str
 
-    @validator("prompt", "tone")
-    def must_not_be_empty(cls, v, field):
+    @field_validator("prompt", "tone")
+    @classmethod
+    def must_not_be_empty(cls, v, info: ValidationInfo):
         if not v.strip():
-            raise ValueError(f"'{field.name}' must not be empty")
+            raise ValueError(
+                f"{info.field_name} cannot be empty"
+            )
         return v.strip()
 
 # ── Health Check ──────────────────────────────────────────

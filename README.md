@@ -1,185 +1,199 @@
 # 📧 AI Email Generator
-An intelligent web application that uses **Google Gemini AI** to generate professional, personalized emails in seconds. Perfect for busy professionals, recruiters, and anyone who needs to compose emails quickly.
+
+A web-based application that helps users generate professional and personalized emails using Google Gemini AI. Users can customize the email tone, define sender and receiver roles, and maintain a history of generated emails for future reference.
 
 ## 📌 Features
-- 🤖 **AI-Powered Email Generation** using Google Gemini LLM
-- 👥 **Role-Based Context** (Sender & Receiver roles for personalized emails)
-- 🎨 **Tone Customization** (Formal, Professional, Friendly, Apology)
-- 📚 **Email History & Tracking** (Save, copy, and reuse past emails)
-- 🔐 **Secure Authentication** (JWT + Bcrypt password hashing)
-- 🎯 **User Dashboard** (View generated emails and history)
-- 🌈 **Modern Beautiful UI** (React + Tailwind CSS with animations)
+* 🤖 AI-powered email generation using Google Gemini API
+* 👥 Role-based email generation (Sender & Receiver context)
+* 🎨 Multiple tone options (Formal, Professional, Friendly, Apology)
+* 🔐 Secure User Authentication (JWT + Bcrypt)
+* 📚 Email History Management
+* 📋 One-click email copy functionality
+* 🛡️ Protected routes using JWT authentication
+* 📱 Responsive and user-friendly interface
+
 
 ## 🛠️ Tech Stack
-| Layer         | Technology |
-|---------------|------------|
-| **Frontend**  | React 19, React Router, Tailwind CSS 4.3, Axios, Vite |
-| **Backend**   | FastAPI, Google Generative AI, SQLAlchemy, Pydantic |
-| **Database**  | MongoDB |
-| **Auth**      | JWT, Bcrypt, OAuth2 |
-| **Styling**   | Tailwind CSS, Custom Animations |
+| Layer          | Technology                                       |
+| -------------- | ------------------------------------------------ |
+| Frontend       | React, React Router, Tailwind CSS, Axios, Vite   |
+| Backend        | FastAPI, Google Gemini API, SQLAlchemy, Pydantic |
+| Database       | SQLite                                           |
+| Authentication | JWT, Bcrypt, OAuth2                              |
+| AI Model       | Google Gemini                                    |
 
 
 ## 📁 Project Structure
-```
+```text
 ai-email-generator/
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/
-│   │   │   ├── login.jsx      # Authentication page
-│   │   │   ├── signup.jsx     # User registration
-│   │   │   └── dashboard.jsx  # Main email generator
-│   │   ├── components/
-│   │   │   └── Navbar.jsx     # Navigation component
-│   │   ├── App.jsx            # Main component
-│   │   └── main.jsx           # Entry point
-│   ├── package.json           # Frontend dependencies
-│   └── vite.config.js         # Vite configuration
+│   │   │   ├── Login.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   └── Dashboard.jsx
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── package.json
+│   └── vite.config.js
+│
 ├── backend/
-│   ├── main.py                # FastAPI server & routes
-│   ├── auth.py                # JWT & authentication logic
-│   ├── database.py            # MongoDB connection
-│   ├── models.py              # Database models
-│   └── requirements.txt       # Python dependencies
+│   ├── main.py
+│   ├── auth.py
+│   ├── models.py
+│   ├── database.py
+│   ├── emails.db
+│   └── requirements.txt
+│
+├── screenshots/
+│   ├── login.png
+│   ├── signup.png
+│   ├── dashboard.png
+│   ├── generated-email.png
+│   └── history.png
+│
 └── README.md
 ```
 
-## 🚀 Getting Started
 
+## 🚀 Getting Started
 ### Prerequisites
 Make sure you have these installed:
-- [Python 3.8+](https://www.python.org/)
-- [Node.js 16+](https://nodejs.org/)
-- [MongoDB](https://www.mongodb.com/) (local or Atlas)
-- [Google Gemini API Key](https://ai.google.dev/)
+
+* Python 3.10+
+* Node.js 16+
+* Google Gemini API Key
 
 ### Installation
-
 **1. Clone the repository**
+
 ```bash
-git clone <repository-url>
+git clone https://github.com/ggreeshma-lab/ai-email-generator.git
 cd ai-email-generator
 ```
 
 **2. Backend Setup**
+
 ```bash
-# Navigate to backend
 cd backend
 
-# Create virtual environment
 python -m venv venv
 
-# Activate virtual environment
-# Windows:
+# Windows
 venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
 
 # Install dependencies
-pip install fastapi uvicorn google-generativeai sqlalchemy pymongo pydantic python-jose passlib python-multipart python-dotenv
+pip install -r requirements.txt
+```
 
-# Create .env file
-echo GEMINI_API_KEY=your_api_key_here > .env
-echo DATABASE_URL=mongodb://localhost:27017/email_generator >> .env
+Create a `.env` file inside the backend folder:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Start the backend server:
+
+```bash
+uvicorn main:app --reload
 ```
 
 **3. Frontend Setup**
 ```bash
-# Navigate to frontend
 cd frontend
 
-# Install dependencies
 npm install
-```
 
-**4. Run the Application**
-
-**Start MongoDB** (if local):
-```bash
-mongod
-```
-
-**Start Backend Server:**
-```bash
-cd backend
-uvicorn main:app --reload --port 8000
-```
-
-**Start Frontend Dev Server:**
-```bash
-cd frontend
 npm run dev
-# Opens at http://localhost:5173
 ```
+
+Frontend runs at:
+
+```text
+http://localhost:5173
+```
+
+Backend runs at:
+
+```text
+http://localhost:8000
+```
+
 
 ## 📖 How to Use
+1. Create a new account.
+2. Login with your credentials.
+3. Enter the purpose or content of the email.
+4. Select the desired tone.
+5. Specify:
 
-1. **Sign Up** - Create an account with email and password
-2. **Login** - Sign in with your credentials
-3. **Generate Email** - Fill in:
-   - Email context/purpose
-   - Select tone (Formal, Professional, Friendly, Apology)
-   - Enter your role (HR Manager, Recruiter, etc.)
-   - Enter recipient's role (Candidate, Employee, etc.)
-4. **Copy & Use** - Click copy button to use the generated email
-5. **View History** - Access all your previously generated emails
+   * Sender Role
+   * Receiver Role
+6. Click **Generate Email**.
+7. Copy the generated email.
+8. View previously generated emails in the **History** section.
 
-## 🔧 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| **POST** | `/signup` | User registration |
-| **POST** | `/login` | User login |
-| **POST** | `/generate` | Generate email (requires JWT) |
-| **GET** | `/history` | Get user's email history (requires JWT) |
-| **GET** | `/` | Health check |
+## 🔗 API Endpoints
+| Method | Endpoint    | Description             |
+| ------ | ----------- | ----------------------- |
+| POST   | `/signup`   | Register a new user     |
+| POST   | `/login`    | User login              |
+| POST   | `/generate` | Generate email using AI |
+| GET    | `/history`  | Retrieve email history  |
+| GET    | `/`         | Health check            |
+
 
 ## 🔐 Security Features
-✅ **Bcrypt Password Hashing** - Passwords never stored in plain text  
-✅ **JWT Authentication** - Secure API endpoints with Bearer tokens  
-✅ **Input Validation** - Pydantic validates all requests  
-✅ **MongoDB Security** - User data is private and isolated  
-✅ **CORS Configuration** - API protection against unauthorized requests
+* JWT-based authentication
+* Password hashing using Bcrypt
+* Protected API routes
+* Input validation using Pydantic
+* User-specific email history
 
-## ⚙️ Environment Variables
-Create a `.env` file in the `backend/` folder:
-```
-GEMINI_API_KEY=your_google_gemini_api_key
-DATABASE_URL=mongodb://localhost:27017/email_generator
-```
 
-## 🐛 Troubleshooting
-| Issue | Solution |
-|-------|----------|
-| GEMINI_API_KEY not found | Create `.env` file in backend folder |
-| Cannot connect to MongoDB | Ensure MongoDB is running or use MongoDB Atlas |
-| CORS error in frontend | Verify backend is running on port 8000 |
-| Login fails | Check if backend server is running |
-| Emails not in history | Ensure you're logged in with valid JWT token |
+## 📷 Screenshots
+### Login Page
 
-## 🚀 Deployment
-**Backend**: Deploy to Heroku, Railway, or Replit with environment variables  
-**Frontend**: Build with `npm run build` and deploy to Vercel or Netlify
+<img width="1918" height="970" alt="Screenshot 2026-06-05 121503" src="https://github.com/user-attachments/assets/c8deb82d-db06-4321-b1b4-ad12efe6b35b" />
 
-## 🎓 Key Highlights
-- ✨ **Google Gemini AI** for intelligent email generation
-- 👥 **Context-aware** generation based on sender/receiver roles
-- 🔐 **Secure** authentication with JWT & Bcrypt
-- 📱 **Responsive** and beautiful UI with Tailwind CSS
-- 📊 **MongoDB** for scalable data storage
-- 🎯 **Production-ready** full-stack application
 
----
+### Signup Page
+
+<img width="1907" height="958" alt="Screenshot 2026-06-05 121552" src="https://github.com/user-attachments/assets/de642e36-d253-44ba-a371-f423ed94d312" />
+
+
+### Dashboard
+
+<img width="1897" height="953" alt="Screenshot 2026-06-05 121524" src="https://github.com/user-attachments/assets/d0e5fb70-d076-4728-9a65-dbeef0a4768d" />
+
+
+### Generated Email
+
+<img width="1895" height="918" alt="Screenshot 2026-06-05 121737" src="https://github.com/user-attachments/assets/504a3b99-f560-40cb-b135-f59b0e0efd0f" />
+
+
+### Email History
+
+<img width="1898" height="956" alt="Screenshot 2026-06-05 121755" src="https://github.com/user-attachments/assets/63c4e627-89bc-4f06-8457-57f5f533594d" />
+
+
+## 🎯 Key Highlights
+* Integrated Google Gemini API for email generation
+* Context-aware emails using sender and receiver roles
+* Secure authentication with JWT and Bcrypt
+* Email history storage and retrieval
+* Responsive UI built with React and Tailwind CSS
+* Full-stack development using FastAPI and React
+
 
 ## 👩‍💻 Developed By
-**Golconda Greeshma**  
-B.E. Computer Science — Neil Gogte Institute of Technology (2023–27)  
-GitHub: [github.com/ggreeshma-lab](https://github.com/ggreeshma-lab)
+**Golconda Greeshma**
+B.E. Computer Science Engineering
+Neil Gogte Institute of Technology (2023–27)
+
+GitHub: https://github.com/ggreeshma-lab
+
 
 ## 📄 License
-This project is for educational & portfolio purposes — 2026
-
----
-
-**Happy Email Generating! 🚀**
-
+This project is for educational and portfolio purposes.

@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel,field_validator, ValidationInfo
+from pydantic import BaseModel, validator
 
 
 from database import SessionLocal, engine
@@ -57,15 +57,18 @@ app.add_middleware(
 class EmailRequest(BaseModel):
     prompt: str
     tone: str
+    sender_role: str
+    receiver_role: str
 
-    @field_validator("prompt", "tone")
-    @classmethod
-    def must_not_be_empty(cls, v, info: ValidationInfo):
+    @validator("prompt", "tone", "sender_role", "receiver_role")
+    def must_not_be_empty(cls, v):
         if not v.strip():
             raise ValueError(
-                f"{info.field_name} cannot be empty"
+                f"Field cannot be empty"
             )
         return v.strip()
+        
+      
 
 # ── Health Check ──────────────────────────────────────────
 @app.get("/")
@@ -77,12 +80,15 @@ async def health_check():
 async def generate_email(data: EmailRequest, current_user: User = Depends(get_current_user)):
 
     final_prompt = f"""
-    Write a professional {data.tone} email.
+Generate a {data.tone} email.
 
-    Topic:
-    {data.prompt}
+Sender Role: {data.sender_role}
+Receiver Role: {data.receiver_role}
 
-    Keep it clear and concise.
+Context:
+{data.prompt}
+
+Generate a professional email.
     """
 
     response = model.generate_content(final_prompt)
@@ -101,6 +107,8 @@ async def generate_email(data: EmailRequest, current_user: User = Depends(get_cu
     user_id=current_user.id,
     prompt=data.prompt,
     tone=data.tone,
+    sender_role=data.sender_role,
+    receiver_role=data.receiver_role,
     generated_email=generated_text
 )
 
@@ -119,7 +127,17 @@ def get_history(current_user: User = Depends(get_current_user)):
     EmailHistory.user_id == current_user.id
 ).all()
 
-    return emails
+    return [
+        {
+            "id": item.id,
+            "prompt": item.prompt,
+            "tone": item.tone,
+            "sender_role": item.sender_role,
+            "receiver_role": item.receiver_role,
+            "email": item.generated_email
+        }
+        for item in emails
+    ]
 class SignupRequest(BaseModel):
 
     email: str

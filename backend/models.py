@@ -19,4 +19,6 @@ class EmailHistory(Base):
 
     prompt = Column(String)
     tone = Column(String)
+    sender_role = Column(String)
+    receiver_role = Column(String)
     generated_email = Column(String)
